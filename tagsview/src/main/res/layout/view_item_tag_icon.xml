@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/category_name"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/button_item_tag"
+    android:drawableStart="@drawable/ic_delete"
+    android:ellipsize="middle"
+    android:gravity="center"
+    android:paddingEnd="12dp"
+    android:paddingStart="12dp"
+    android:singleLine="true"
+    android:textColor="@android:color/white"
+    android:textSize="18sp"
+    tools:text="Tag" />

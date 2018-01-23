@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.apmem.tools.layouts.FlowLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/flowLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="2dp"
+    android:gravity="start|center_vertical"
+    android:paddingBottom="16dp"
+    android:paddingEnd="12dp"
+    android:paddingStart="16dp"
+    android:paddingTop="16dp">
+
+    <AutoCompleteTextView
+        android:id="@+id/new_tag_input"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="#00000000"
+        android:dropDownWidth="150dp"
+        android:hint="@string/add_your_tags"
+        android:imeOptions="actionDone"
+        android:minWidth="5dp"
+        android:singleLine="true" />
+</org.apmem.tools.layouts.FlowLayout>
+
