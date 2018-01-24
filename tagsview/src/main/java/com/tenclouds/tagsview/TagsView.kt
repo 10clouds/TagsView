@@ -5,6 +5,8 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -85,16 +87,11 @@ class TagsView : LinearLayout {
             }
         }
         val adapter = ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line)
-        if (!isInEditMode) {
-            populateAdapter(adapter)
-        }
+
         textInput.setAdapter(adapter)
     }
 
-    private fun populateAdapter(adapter: ArrayAdapter<String>) {
-
-    }
-
+    @Suppress("MemberVisibilityCanBePrivate")
     fun setEditable(editable: Boolean) {
         this.isEditable = editable
         if (editable) {
@@ -104,24 +101,27 @@ class TagsView : LinearLayout {
         }
     }
 
+    @Suppress("unused")
     fun addTags(tags: List<String>) {
         for (tag in tags) {
             addTagView(tag)
         }
     }
 
+    @Suppress("unused")
     fun addTags(tags: Array<String>) {
         for (tag in tags) {
             addTagView(tag)
         }
     }
 
-    fun removeTags() {
+    @Suppress("unused")
+    fun removeAllTags() {
         flowLayout.removeAllViews()
         tags.clear()
     }
 
-    fun addTagView(tag: String?) {
+    private fun addTagView(tag: String?) {
         if (tag == null) return
         for (s in tags) {
             if (tag.equals(s, ignoreCase = true)) return
@@ -153,30 +153,39 @@ class TagsView : LinearLayout {
         view.minimumHeight = minHeight
         view.tag = tag
 
+        val fadeInAnimation = AnimationUtils.loadAnimation(context, R.anim.fade_in)
         if (isEditable) {
             flowLayout.addView(view, flowLayout.childCount - 1)
+            view.startAnimation(fadeInAnimation)
 
-            view.setOnClickListener { v ->
-                flowLayout.removeView(view)
+            view.setOnClickListener {
+                val fadeOutAnimation = AnimationUtils.loadAnimation(context, R.anim.fade_out)
+                fadeOutAnimation.setAnimationListener(object : Animation.AnimationListener {
+                    override fun onAnimationRepeat(animation: Animation?) {}
+
+                    override fun onAnimationEnd(animation: Animation?) = flowLayout.removeView(view)
+
+                    override fun onAnimationStart(animation: Animation?) {}
+                })
+                view.startAnimation(fadeOutAnimation)
+
                 tags.remove(tag)
 
-                if (onTagSelectedListener != null) {
-                    onTagSelectedListener!!.onTagSelected(tag)
-                }
+                onTagSelectedListener?.onTagSelected(tag)
             }
         } else {
             flowLayout.addView(view)
+            view.startAnimation(fadeInAnimation)
 
-            view.setOnClickListener { v ->
-                if (onTagSelectedListener != null) {
-                    onTagSelectedListener!!.onTagSelected(tag)
-                }
+            view.setOnClickListener {
+                onTagSelectedListener?.onTagSelected(tag)
             }
         }
 
         tags.add(tag)
     }
 
+    @Suppress("unused")
     fun setOnTagSelectedListener(listener: OnTagSelectedListener) {
         onTagSelectedListener = listener
     }
@@ -187,7 +196,7 @@ class TagsView : LinearLayout {
 
     companion object {
 
-        private val ITEM_MARGIN_DIPS = 4
-        private val ITEM_HEIGHT_DIPS = 36
+        private const val ITEM_MARGIN_DIPS = 4
+        private const val ITEM_HEIGHT_DIPS = 36
     }
 }
