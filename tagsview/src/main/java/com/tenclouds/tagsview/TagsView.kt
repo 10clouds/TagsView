@@ -19,9 +19,10 @@ class TagsView : LinearLayout {
     private lateinit var textInput: AutoCompleteTextView
 
     private var isEditable: Boolean = false
-    private var onTagSelectedListener: OnTagSelectedListener? = null
 
-    val tags = ArrayList<String>()
+    var onTagSelectedListener: (String) -> Unit = {}
+
+    private val selectedTags = ArrayList<String>()
 
     constructor(context: Context) : super(context) {
         init()
@@ -61,34 +62,38 @@ class TagsView : LinearLayout {
 
     private fun initTextInput() {
         textInput = findViewById(R.id.new_tag_input)
-        textInput.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                val input = textInput.text.toString()
-                if (input.trim { it <= ' ' } != "") {
-                    addTagView(input.trim { it <= ' ' })
-                    textInput.setText("")
-                    textInput.hint = ""
-                    return@setOnEditorActionListener true
+        textInput.apply {
+            setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    val input = textInput.text.toString()
+                    if (input.trim { it <= ' ' } != "") {
+                        addTagView(input.trim { it <= ' ' })
+                        textInput.setText("")
+                        textInput.hint = ""
+                        return@setOnEditorActionListener true
+                    }
+                }
+                false
+            }
+
+            setOnItemClickListener { _, _, position, _ ->
+                val item = adapter.getItem(position)
+                if (item is String) {
+                    addTagView(item)
+                    setText("")
+                    hint = ""
                 }
             }
-            false
-        }
-        textInput.setOnItemClickListener { _, _, position, _ ->
-            val item = textInput.adapter.getItem(position)
-            if (item is String) {
-                addTagView(item)
-                textInput.setText("")
-                textInput.hint = ""
-            }
-        }
-        textInput.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                textInput.setText("")
-            }
-        }
-        val adapter = ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line)
 
-        textInput.setAdapter(adapter)
+            setOnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {
+                    setText("")
+                }
+            }
+
+            val adapter = ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line)
+            setAdapter(adapter)
+        }
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -102,100 +107,82 @@ class TagsView : LinearLayout {
     }
 
     @Suppress("unused")
-    fun addTags(tags: List<String>) {
-        for (tag in tags) {
-            addTagView(tag)
-        }
-    }
+    fun addTags(tags: List<String>) = tags.forEach { addTagView(it) }
 
     @Suppress("unused")
-    fun addTags(tags: Array<String>) {
-        for (tag in tags) {
-            addTagView(tag)
-        }
-    }
+    fun addTags(tags: Array<String>) = tags.forEach { addTagView(it) }
 
     @Suppress("unused")
     fun removeAllTags() {
         flowLayout.removeAllViews()
-        tags.clear()
+        selectedTags.clear()
     }
 
     private fun addTagView(tag: String?) {
-        if (tag == null) return
-        for (s in tags) {
-            if (tag.equals(s, ignoreCase = true)) return
-        }
+        if (tag == null || tag.equals(tag, ignoreCase = true)) return
 
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-        val view: View
-        if (isEditable) {
-            view = inflater.inflate(R.layout.view_item_tag_icon, flowLayout, false)
+        val view = if (isEditable) {
+            inflater.inflate(R.layout.view_item_tag_icon, flowLayout, false)
         } else {
-            view = inflater.inflate(R.layout.view_item_tag, flowLayout, false)
+            inflater.inflate(R.layout.view_item_tag, flowLayout, false)
         }
 
         val tagText = view.findViewById<TextView>(R.id.category_name)
         tagText.text = tag
 
-        val r = context.resources
+        val resources = context.resources
         val minHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                ITEM_HEIGHT_DIPS.toFloat(), r.displayMetrics).toInt()
+                ITEM_HEIGHT_DIPS.toFloat(), resources.displayMetrics).toInt()
         val margin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                ITEM_MARGIN_DIPS.toFloat(), r.displayMetrics).toInt()
+                ITEM_MARGIN_DIPS.toFloat(), resources.displayMetrics).toInt()
 
         val layoutParams = FlowLayout.LayoutParams(
                 TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT)
         layoutParams.setMargins(0, margin, margin, margin)
 
-        view.layoutParams = layoutParams
-        view.minimumHeight = minHeight
-        view.tag = tag
-
-        val fadeInAnimation = AnimationUtils.loadAnimation(context, R.anim.fade_in)
-        if (isEditable) {
-            flowLayout.addView(view, flowLayout.childCount - 1)
-            view.startAnimation(fadeInAnimation)
-
-            view.setOnClickListener {
-                val fadeOutAnimation = AnimationUtils.loadAnimation(context, R.anim.fade_out)
-                fadeOutAnimation.setAnimationListener(object : Animation.AnimationListener {
-                    override fun onAnimationRepeat(animation: Animation?) {}
-
-                    override fun onAnimationEnd(animation: Animation?) = flowLayout.removeView(view)
-
-                    override fun onAnimationStart(animation: Animation?) {}
-                })
-                view.startAnimation(fadeOutAnimation)
-
-                tags.remove(tag)
-
-                onTagSelectedListener?.onTagSelected(tag)
-            }
-        } else {
-            flowLayout.addView(view)
-            view.startAnimation(fadeInAnimation)
-
-            view.setOnClickListener {
-                onTagSelectedListener?.onTagSelected(tag)
-            }
+        view.apply {
+            this.layoutParams = layoutParams
+            this.minimumHeight = minHeight
+            this.tag = tag
         }
 
-        tags.add(tag)
+        val fadeInAnimation = AnimationUtils.loadAnimation(context, R.anim.fade_in)
+
+        addTagAnimated(view, fadeInAnimation, tag)
+
+        selectedTags.add(tag)
     }
 
-    @Suppress("unused")
-    fun setOnTagSelectedListener(listener: OnTagSelectedListener) {
-        onTagSelectedListener = listener
+    private fun addTagAnimated(view: View, fadeInAnimation: Animation, tag: String) {
+        flowLayout.addView(view, flowLayout.childCount - 1)
+        view.apply {
+            startAnimation(fadeInAnimation)
+            setOnClickListener {
+                if (isEditable) removeTag(view, tag)
+                else onTagSelectedListener.invoke(tag)
+            }
+        }
     }
 
-    interface OnTagSelectedListener {
-        fun onTagSelected(tag: String?)
+    private fun removeTag(tagView: View, tag: String) {
+        val fadeOutAnimation = AnimationUtils.loadAnimation(context, R.anim.fade_out)
+        fadeOutAnimation.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationRepeat(animation: Animation?) {}
+
+            override fun onAnimationEnd(animation: Animation?) = flowLayout.removeView(tagView)
+
+            override fun onAnimationStart(animation: Animation?) {}
+        })
+        tagView.startAnimation(fadeOutAnimation)
+
+        selectedTags.remove(tag)
+
+        onTagSelectedListener.invoke(tag)
     }
 
     companion object {
-
         private const val ITEM_MARGIN_DIPS = 4
         private const val ITEM_HEIGHT_DIPS = 36
     }
