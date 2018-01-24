@@ -23,7 +23,7 @@ class TagsView : LinearLayout {
 
     var onTagSelectedListener: (String) -> Unit = {}
 
-    private val selectedTags = ArrayList<String>()
+    private val tags = ArrayList<String>()
 
     constructor(context: Context) : super(context) {
         init()
@@ -87,8 +87,8 @@ class TagsView : LinearLayout {
             }
 
             setOnKeyListener { v, keyCode, event ->
-                if (keyCode == KeyEvent.KEYCODE_DEL && textInput.text.isEmpty()) {
-                    removeTag(flowLayout.getChildAt(flowLayout.childCount - 1), selectedTags.last())
+                if (keyCode == KeyEvent.KEYCODE_DEL && textInput.text.isEmpty() && event.action == KeyEvent.ACTION_UP && tags.isNotEmpty()) {
+                    removeTag(flowLayout.getChildAt(flowLayout.childCount - 2), tags.last())
                     return@setOnKeyListener true
                 }
                 return@setOnKeyListener false
@@ -124,11 +124,11 @@ class TagsView : LinearLayout {
     @Suppress("unused")
     fun removeAllTags() {
         flowLayout.removeAllViews()
-        selectedTags.clear()
+        tags.clear()
     }
 
     private fun addTagView(tag: String?) {
-        if (tag == null || selectedTags.contains(tag)) return
+        if (tag == null || tags.contains(tag)) return
 
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
@@ -161,7 +161,7 @@ class TagsView : LinearLayout {
 
         addTagAnimated(view, fadeInAnimation, tag)
 
-        selectedTags.add(tag)
+        tags.add(tag)
     }
 
     private fun addTagAnimated(view: View, fadeInAnimation: Animation, tag: String) {
@@ -186,7 +186,7 @@ class TagsView : LinearLayout {
         })
         tagView.startAnimation(fadeOutAnimation)
 
-        selectedTags.remove(tag)
+        tags.remove(tag)
 
         onTagSelectedListener.invoke(tag)
     }
