@@ -3,6 +3,7 @@ package com.tenclouds.tagsview
 import android.content.Context
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.Animation
@@ -85,6 +86,14 @@ class TagsView : LinearLayout {
                 }
             }
 
+            setOnKeyListener { v, keyCode, event ->
+                if (keyCode == KeyEvent.KEYCODE_DEL && textInput.text.isEmpty()) {
+                    removeTag(flowLayout.getChildAt(flowLayout.childCount - 1), selectedTags.last())
+                    return@setOnKeyListener true
+                }
+                return@setOnKeyListener false
+            }
+
             setOnFocusChangeListener { _, hasFocus ->
                 if (!hasFocus) {
                     setText("")
@@ -119,7 +128,7 @@ class TagsView : LinearLayout {
     }
 
     private fun addTagView(tag: String?) {
-        if (tag == null || tag.equals(tag, ignoreCase = true)) return
+        if (tag == null || selectedTags.contains(tag)) return
 
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
