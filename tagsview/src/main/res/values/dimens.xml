@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="tagTitlePadding">8dp</dimen>
+    <dimen name="cornerRadius">15dp</dimen>
 </resources>

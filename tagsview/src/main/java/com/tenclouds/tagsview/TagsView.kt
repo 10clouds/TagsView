@@ -1,6 +1,8 @@
 package com.tenclouds.tagsview
 
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.KeyEvent
@@ -14,6 +16,7 @@ import android.widget.*
 import org.apmem.tools.layouts.FlowLayout
 import java.util.*
 
+
 class TagsView : LinearLayout {
 
     private lateinit var flowLayout: FlowLayout
@@ -26,6 +29,7 @@ class TagsView : LinearLayout {
     private val tags = ArrayList<String>()
 
     private var textSize: Float = context.resources.getDimension(R.dimen.defaultTextSize)
+    private var tagViewBackgroundColor = ContextCompat.getColor(context, R.color.tag_view_background)
 
     constructor(context: Context) : super(context) {
         init()
@@ -48,6 +52,8 @@ class TagsView : LinearLayout {
 
             textSize = a.getDimension(R.styleable.TagsView_tagTextSize, textSize)
             findViewById<AutoCompleteTextView>(R.id.newTagInput).textSize = textSize
+
+            tagViewBackgroundColor = a.getColor(R.styleable.TagsView_tagViewBackgroundColor, tagViewBackgroundColor)
         } finally {
             a.recycle()
         }
@@ -147,6 +153,8 @@ class TagsView : LinearLayout {
         tagText.text = tag
         tagText.textSize = textSize
 
+        view.background = getTagViewBackground()
+
         val resources = context.resources
         val minHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 ITEM_HEIGHT_DIPS.toFloat(), resources.displayMetrics).toInt()
@@ -195,6 +203,13 @@ class TagsView : LinearLayout {
         tags.remove(tag)
 
         onTagSelectedListener.invoke(tag)
+    }
+
+    private fun getTagViewBackground() = GradientDrawable().apply {
+        shape = GradientDrawable.RECTANGLE
+        val cornerRadius = context.resources.getDimension(R.dimen.cornerRadius)
+        cornerRadii = floatArrayOf(cornerRadius, cornerRadius, cornerRadius, cornerRadius, cornerRadius, cornerRadius, cornerRadius, cornerRadius)
+        setColor(tagViewBackgroundColor)
     }
 
     companion object {
