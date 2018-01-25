@@ -25,6 +25,8 @@ class TagsView : LinearLayout {
 
     private val tags = ArrayList<String>()
 
+    private var textSize: Float = context.resources.getDimension(R.dimen.defaultTextSize)
+
     constructor(context: Context) : super(context) {
         init()
     }
@@ -43,6 +45,9 @@ class TagsView : LinearLayout {
 
         try {
             setEditable(a.getBoolean(R.styleable.TagsView_tagsEditable, false))
+
+            textSize = a.getDimension(R.styleable.TagsView_tagTextSize, textSize)
+            findViewById<AutoCompleteTextView>(R.id.newTagInput).textSize = textSize
         } finally {
             a.recycle()
         }
@@ -62,7 +67,7 @@ class TagsView : LinearLayout {
     }
 
     private fun initTextInput() {
-        textInput = findViewById(R.id.new_tag_input)
+        textInput = findViewById(R.id.newTagInput)
         textInput.apply {
             setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -138,8 +143,9 @@ class TagsView : LinearLayout {
             inflater.inflate(R.layout.view_item_tag, flowLayout, false)
         }
 
-        val tagText = view.findViewById<TextView>(R.id.category_name)
+        val tagText = view.findViewById<TextView>(R.id.categoryName)
         tagText.text = tag
+        tagText.textSize = textSize
 
         val resources = context.resources
         val minHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,

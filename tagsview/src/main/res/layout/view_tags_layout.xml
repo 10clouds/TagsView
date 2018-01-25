@@ -11,7 +11,7 @@
     android:paddingTop="16dp">
 
     <AutoCompleteTextView
-        android:id="@+id/new_tag_input"
+        android:id="@+id/newTagInput"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#00000000"
@@ -19,6 +19,7 @@
         android:hint="@string/add_your_tags"
         android:imeOptions="actionDone"
         android:minWidth="5dp"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:textSize="@dimen/defaultTextSize" />
 </org.apmem.tools.layouts.FlowLayout>
 

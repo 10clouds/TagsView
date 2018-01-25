@@ -2,5 +2,6 @@
 <resources>
     <declare-styleable name="TagsView">
         <attr name="tagsEditable" format="boolean" />
+        <attr name="tagTextSize" format="dimension" />
     </declare-styleable>
 </resources>
