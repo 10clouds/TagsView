@@ -1,16 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/categoryName"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/button_item_tag"
-    android:drawableStart="@drawable/ic_delete"
-    android:ellipsize="middle"
-    android:gravity="center"
-    android:paddingEnd="12dp"
-    android:paddingStart="12dp"
-    android:singleLine="true"
-    android:textColor="@android:color/white"
-    android:textSize="@dimen/defaultTextSize"
-    tools:text="Tag" />
+    android:gravity="center_vertical">
+
+    <ImageView
+        android:id="@+id/deleteIcon"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="2dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/categoryName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="middle"
+        android:gravity="center"
+        android:paddingEnd="@dimen/tagTitlePadding"
+        android:paddingStart="@dimen/tagTitlePadding"
+        android:singleLine="true"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/defaultTextSize"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/deleteIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Tag" />
+</android.support.constraint.ConstraintLayout>
