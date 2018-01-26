@@ -97,7 +97,7 @@ class TagsView : LinearLayout {
                 }
             }
 
-            setOnKeyListener { v, keyCode, event ->
+            setOnKeyListener { _, keyCode, event ->
                 if (keyCode == KeyEvent.KEYCODE_DEL && textInput.text.isEmpty() && event.action == KeyEvent.ACTION_UP && tags.isNotEmpty()) {
                     removeTag(flowLayout.getChildAt(flowLayout.childCount - 2), tags.last())
                     return@setOnKeyListener true

@@ -1,4 +1,4 @@
-package com.tenclouds.tagsview
+package com.tenclouds.sampleapp
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
