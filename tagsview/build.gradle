@@ -49,7 +49,7 @@ repositories {
 }
 
 task generateArtifactoryConfig {
-    def pattern = 'TagsView/build/outputs/aar/tagsview-release.aar'
+    def pattern = 'tagsview/build/outputs/aar/tagsview-release.aar'
     def target = "${libraryRepo}/${libraryGroup}/${libraryModule}/${libraryVersion}/${libraryModule}-${libraryVersion}.aar"
 
     def jsonBuilder = new JsonBuilder()
