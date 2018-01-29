@@ -28,6 +28,7 @@ class TagsView : LinearLayout {
 
     private var textSize: Float = -1f
     private var tagViewBackgroundColor = -1
+    private var allowDuplicates = false
     private var editable: Boolean = false
         set(value) {
             field = value
@@ -66,6 +67,8 @@ class TagsView : LinearLayout {
             tagViewBackgroundColor = a.getColor(R.styleable.TagsView_tagsViewBackgroundColor, ContextCompat.getColor(context, R.color.default_tag_view_background))
 
             newTagInput.hint = a.getString(R.styleable.TagsView_tagsViewHint) ?: ""
+
+            allowDuplicates = a.getBoolean(R.styleable.TagsView_tagsViewAllowDuplicates, false)
         } finally {
             a.recycle()
         }
@@ -142,7 +145,7 @@ class TagsView : LinearLayout {
 
     @Suppress("MemberVisibilityCanBePrivate")
     fun addTag(tag: String?) {
-        if (tag == null || tags.contains(tag)) return
+        if (tag == null || (tags.contains(tag) && !allowDuplicates)) return
 
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
@@ -152,9 +155,10 @@ class TagsView : LinearLayout {
             inflater.inflate(R.layout.view_item_tag, flowLayout, false)
         }
 
-        val tagText = view.findViewById<TextView>(R.id.categoryName)
-        tagText.text = tag
-        tagText.textSize = textSize
+        view.findViewById<TextView>(R.id.categoryName).apply {
+            text = tag
+            textSize = this@TagsView.textSize
+        }
 
         view.background = getTagViewBackground()
 
