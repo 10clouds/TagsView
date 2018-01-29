@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:tagsViewEditable="true"
-        app:tagsViewHint="Add your tag" />
+        app:tagsViewHint="Add your tag"
+        app:tagsViewTextSize="12sp" />
 
 </android.support.constraint.ConstraintLayout>
