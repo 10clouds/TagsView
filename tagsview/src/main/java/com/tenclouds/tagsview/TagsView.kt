@@ -21,8 +21,7 @@ import java.util.*
 
 
 class TagsView : LinearLayout {
-
-    var onTagSelectedListener: (String) -> Unit = {}
+    var tagClickedListener: (String) -> Unit = {}
 
     private lateinit var flowLayout: FlowLayout
     private lateinit var textInput: AutoCompleteTextView
@@ -188,7 +187,7 @@ class TagsView : LinearLayout {
             startAnimation(fadeInAnimation)
             setOnClickListener {
                 if (editable) removeTag(view, tag)
-                else onTagSelectedListener.invoke(tag)
+                else tagClickedListener.invoke(tag)
             }
         }
     }
@@ -206,7 +205,7 @@ class TagsView : LinearLayout {
 
         tags.remove(tag)
 
-        onTagSelectedListener.invoke(tag)
+        tagClickedListener.invoke(tag)
     }
 
     private fun getTagViewBackground(): StateListDrawable {
