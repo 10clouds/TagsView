@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <org.apmem.tools.layouts.FlowLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/flowLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -16,10 +17,10 @@
         android:layout_height="wrap_content"
         android:background="#00000000"
         android:dropDownWidth="150dp"
-        android:hint="@string/add_your_tags"
         android:imeOptions="actionDone"
         android:minWidth="5dp"
         android:singleLine="true"
-        android:textSize="@dimen/defaultTextSize" />
+        android:textSize="@dimen/defaultTextSize"
+        tools:ignore="LabelFor" />
 </org.apmem.tools.layouts.FlowLayout>
 

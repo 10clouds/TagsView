@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.tenclouds.tagsview.MainActivity">
+    tools:context="com.tenclouds.sampleapp.MainActivity">
 
     <com.tenclouds.tagsview.TagsView
         android:id="@+id/new_observation_tags_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:tagsEditable="true" />
+        app:tagsViewEditable="true"
+        app:tagsViewHint="Add your tag" />
 
 </android.support.constraint.ConstraintLayout>

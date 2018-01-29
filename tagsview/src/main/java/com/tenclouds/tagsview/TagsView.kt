@@ -22,17 +22,24 @@ import java.util.*
 
 class TagsView : LinearLayout {
 
+    var onTagSelectedListener: (String) -> Unit = {}
+
     private lateinit var flowLayout: FlowLayout
     private lateinit var textInput: AutoCompleteTextView
 
-    private var isEditable: Boolean = false
-
-    var onTagSelectedListener: (String) -> Unit = {}
+    private var textSize: Float = -1f
+    private var tagViewBackgroundColor = -1
+    private var editable: Boolean = false
+        set(value) {
+            field = value
+            if (value) {
+                textInput.visibility = View.VISIBLE
+            } else {
+                textInput.visibility = View.GONE
+            }
+        }
 
     private val tags = ArrayList<String>()
-
-    private var textSize: Float = context.resources.getDimension(R.dimen.defaultTextSize)
-    private var tagViewBackgroundColor = ContextCompat.getColor(context, R.color.default_tag_view_background)
 
     constructor(context: Context) : super(context) {
         init()
@@ -51,12 +58,15 @@ class TagsView : LinearLayout {
                 0, 0)
 
         try {
-            setEditable(a.getBoolean(R.styleable.TagsView_tagsEditable, false))
+            editable = a.getBoolean(R.styleable.TagsView_tagsViewEditable, false)
 
-            textSize = a.getDimension(R.styleable.TagsView_tagTextSize, textSize)
-            findViewById<AutoCompleteTextView>(R.id.newTagInput).textSize = textSize
+            textSize = a.getDimension(R.styleable.TagsView_tagsViewTextSize, context.resources.getDimension(R.dimen.defaultTextSize))
+            val newTagInput = findViewById<AutoCompleteTextView>(R.id.newTagInput)
+            newTagInput.textSize = textSize
 
-            tagViewBackgroundColor = a.getColor(R.styleable.TagsView_tagViewBackgroundColor, tagViewBackgroundColor)
+            tagViewBackgroundColor = a.getColor(R.styleable.TagsView_tagsViewBackgroundColor, ContextCompat.getColor(context, R.color.default_tag_view_background))
+
+            newTagInput.hint = a.getString(R.styleable.TagsView_tagsViewHint) ?: ""
         } finally {
             a.recycle()
         }
@@ -82,7 +92,7 @@ class TagsView : LinearLayout {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     val input = textInput.text.toString()
                     if (input.trim { it <= ' ' } != "") {
-                        addTagView(input.trim { it <= ' ' })
+                        addTag(input.trim { it <= ' ' })
                         textInput.setText("")
                         textInput.hint = ""
                         return@setOnEditorActionListener true
@@ -94,7 +104,7 @@ class TagsView : LinearLayout {
             setOnItemClickListener { _, _, position, _ ->
                 val item = adapter.getItem(position)
                 if (item is String) {
-                    addTagView(item)
+                    addTag(item)
                     setText("")
                     hint = ""
                 }
@@ -119,21 +129,11 @@ class TagsView : LinearLayout {
         }
     }
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    fun setEditable(editable: Boolean) {
-        this.isEditable = editable
-        if (editable) {
-            textInput.visibility = View.VISIBLE
-        } else {
-            textInput.visibility = View.GONE
-        }
-    }
+    @Suppress("unused")
+    fun addTags(tags: List<String>) = tags.forEach { addTag(it) }
 
     @Suppress("unused")
-    fun addTags(tags: List<String>) = tags.forEach { addTagView(it) }
-
-    @Suppress("unused")
-    fun addTags(tags: Array<String>) = tags.forEach { addTagView(it) }
+    fun addTags(tags: Array<String>) = tags.forEach { addTag(it) }
 
     @Suppress("unused")
     fun removeAllTags() {
@@ -141,12 +141,13 @@ class TagsView : LinearLayout {
         tags.clear()
     }
 
-    private fun addTagView(tag: String?) {
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun addTag(tag: String?) {
         if (tag == null || tags.contains(tag)) return
 
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-        val view = if (isEditable) {
+        val view = if (editable) {
             inflater.inflate(R.layout.view_item_tag_icon, flowLayout, false)
         } else {
             inflater.inflate(R.layout.view_item_tag, flowLayout, false)
@@ -186,7 +187,7 @@ class TagsView : LinearLayout {
         view.apply {
             startAnimation(fadeInAnimation)
             setOnClickListener {
-                if (isEditable) removeTag(view, tag)
+                if (editable) removeTag(view, tag)
                 else onTagSelectedListener.invoke(tag)
             }
         }

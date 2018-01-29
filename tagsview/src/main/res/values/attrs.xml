@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="TagsView">
-        <attr name="tagsEditable" format="boolean" />
-        <attr name="tagTextSize" format="dimension" />
-        <attr name="tagViewBackgroundColor" format="color" />
+        <attr name="tagsViewEditable" format="boolean" />
+        <attr name="tagsViewTextSize" format="dimension" />
+        <attr name="tagsViewBackgroundColor" format="color" />
+        <attr name="tagsViewHint" format="string" />
     </declare-styleable>
 </resources>
