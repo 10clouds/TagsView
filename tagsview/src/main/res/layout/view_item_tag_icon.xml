@@ -9,6 +9,7 @@
     android:clickable="true"
     android:focusable="true"
     android:gravity="center_vertical"
+    android:padding="@dimen/tagViewPadding"
     tools:background="@drawable/background_item"
     tools:backgroundTint="@color/default_tag_view_background">
 
