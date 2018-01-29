@@ -1,5 +1,9 @@
+import groovy.json.JsonBuilder
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+
+apply from: 'dependencies.gradle'
 
 android {
     compileSdkVersion 27
@@ -42,4 +46,21 @@ dependencies {
 }
 repositories {
     mavenCentral()
+}
+
+task generateArtifactoryConfig {
+    def pattern = 'tagsview/build/outputs/aar/tagsview-release.aar'
+    def target = "${libraryRepo}/${libraryGroup}/${libraryModule}/${libraryVersion}/${libraryModule}-${libraryVersion}.aar"
+
+    def jsonBuilder = new JsonBuilder()
+    def contact = [[getPattern: { pattern }, getTarget: { target }]]
+    jsonBuilder { files contact.collect { [pattern: it.getPattern(), target: it.getTarget()] } }
+
+    def stringsFile = new File("artifactory.config")
+    stringsFile.delete()
+    stringsFile.write(jsonBuilder.toString())
+}
+
+build.doLast {
+    generateArtifactoryConfig.execute()
 }
