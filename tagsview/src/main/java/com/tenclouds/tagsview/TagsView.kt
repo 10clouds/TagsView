@@ -1,9 +1,12 @@
 package com.tenclouds.tagsview
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.StateListDrawable
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
+import android.util.StateSet
 import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -29,7 +32,7 @@ class TagsView : LinearLayout {
     private val tags = ArrayList<String>()
 
     private var textSize: Float = context.resources.getDimension(R.dimen.defaultTextSize)
-    private var tagViewBackgroundColor = ContextCompat.getColor(context, R.color.tag_view_background)
+    private var tagViewBackgroundColor = ContextCompat.getColor(context, R.color.default_tag_view_background)
 
     constructor(context: Context) : super(context) {
         init()
@@ -205,11 +208,35 @@ class TagsView : LinearLayout {
         onTagSelectedListener.invoke(tag)
     }
 
-    private fun getTagViewBackground() = GradientDrawable().apply {
-        shape = GradientDrawable.RECTANGLE
-        val cornerRadius = context.resources.getDimension(R.dimen.cornerRadius)
-        cornerRadii = floatArrayOf(cornerRadius, cornerRadius, cornerRadius, cornerRadius, cornerRadius, cornerRadius, cornerRadius, cornerRadius)
-        setColor(tagViewBackgroundColor)
+    private fun getTagViewBackground(): StateListDrawable {
+        val standardDrawable = getRoundedCornerDrawable(tagViewBackgroundColor)
+
+        val pressedDrawable = getRoundedCornerDrawable(darkenColor(tagViewBackgroundColor, 0.85f))
+
+        return StateListDrawable().apply {
+            addState(intArrayOf(android.R.attr.state_pressed), pressedDrawable)
+            addState(StateSet.WILD_CARD, standardDrawable)
+        }
+    }
+
+    private fun darkenColor(color: Int, factor: Float): Int {
+        val a = Color.alpha(color)
+        val r = Math.round(Color.red(color) * factor)
+        val g = Math.round(Color.green(color) * factor)
+        val b = Math.round(Color.blue(color) * factor)
+        return Color.argb(a,
+                Math.min(r, 255),
+                Math.min(g, 255),
+                Math.min(b, 255))
+    }
+
+    private fun getRoundedCornerDrawable(color: Int): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            val cornerRadius = context.resources.getDimension(R.dimen.cornerRadius)
+            cornerRadii = floatArrayOf(cornerRadius, cornerRadius, cornerRadius, cornerRadius, cornerRadius, cornerRadius, cornerRadius, cornerRadius)
+            setColor(color)
+        }
     }
 
     companion object {

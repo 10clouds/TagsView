@@ -6,9 +6,11 @@
     android:id="@+id/tagContainer"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/button_item_tag"
+    android:clickable="true"
+    android:focusable="true"
     android:gravity="center_vertical"
-    tools:backgroundTint="@color/tag_view_background">
+    tools:background="@drawable/background_item"
+    tools:backgroundTint="@color/default_tag_view_background">
 
     <ImageView
         android:id="@+id/deleteIcon"
